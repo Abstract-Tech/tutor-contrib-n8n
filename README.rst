@@ -15,6 +15,7 @@ Installation
 ************
 
 .. code-block:: bash
+
     pip install tutor-contrib-n8n
     # or, to install the latest development version:
     pip install git+https://github.com/Abstract-Tech/tutor-contrib-n8n
@@ -50,16 +51,16 @@ All settings are prefixed with ``N8N_`` and can be set with
 n8n service
 ===========
 
-======================================= ========================================================= ==============================================
-Setting                                 Default                                                   Description
-======================================= ========================================================= ==============================================
-``N8N_DOCKER_IMAGE``                    ``docker.n8n.io/n8nio/n8n:latest``                       Docker image used for the n8n container.
-``N8N_HOST``                            ``n8n.{{ LMS_HOST }}``                                   Domain name at which n8n is exposed.
-``N8N_PORT``                            ``5678``                                                 Port n8n listens on inside its container.
-``N8N_GENERIC_TIMEZONE``                ``UTC``                                                  Timezone used by n8n for scheduling.
-``N8N_ENCRYPTION_KEY``                  randomly generated                                       Key n8n uses to encrypt stored credentials.
-``N8N_K8S_STORAGE``                     ``1Gi``                                                  Size of the n8n ``PersistentVolumeClaim`` (k8s only).
-======================================= ========================================================= ==============================================
+======================== ================================== =====================================================
+Setting                  Default                            Description
+======================== ================================== =====================================================
+``N8N_DOCKER_IMAGE``     ``docker.n8n.io/n8nio/n8n:latest`` Docker image used for the n8n container.
+``N8N_HOST``             ``n8n.{{ LMS_HOST }}``             Domain name at which n8n is exposed.
+``N8N_PORT``             ``5678``                           Port n8n listens on inside its container.
+``N8N_GENERIC_TIMEZONE`` ``UTC``                            Timezone used by n8n for scheduling.
+``N8N_ENCRYPTION_KEY``   randomly generated                 Key n8n uses to encrypt stored credentials.
+``N8N_K8S_STORAGE``      ``1Gi``                            Size of the n8n ``PersistentVolumeClaim`` (k8s only).
+======================== ================================== =====================================================
 
 n8n data (workflows, credentials) is persisted in the ``n8n`` bind-mounted
 data volume (``tutor local``) or ``PersistentVolumeClaim`` (``tutor k8s``),
