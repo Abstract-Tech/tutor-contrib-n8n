@@ -1,0 +1,3 @@
+{{ N8N_HOST }}{$default_site_port} {
+    import proxy "n8n:{{ N8N_PORT }}"
+}

@@ -1,0 +1,2 @@
+recursive-include tutorn8n/patches *
+recursive-include tutorn8n/templates *

@@ -1,0 +1,70 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: n8n
+  labels:
+    app.kubernetes.io/name: n8n
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: n8n
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: n8n
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: "OnRootMismatch"
+      containers:
+        - name: n8n
+          image: {{ N8N_DOCKER_IMAGE }}
+          env:
+            - name: N8N_HOST
+              value: "{{ N8N_HOST }}"
+            - name: N8N_PORT
+              value: "{{ N8N_PORT }}"
+            - name: N8N_PROTOCOL
+              value: "{% if ENABLE_HTTPS %}https{% else %}http{% endif %}"
+            - name: NODE_ENV
+              value: production
+            - name: WEBHOOK_URL
+              value: "{% if ENABLE_HTTPS %}https{% else %}http{% endif %}://{{ N8N_HOST }}/"
+            - name: GENERIC_TIMEZONE
+              value: "{{ N8N_GENERIC_TIMEZONE }}"
+            - name: N8N_ENCRYPTION_KEY
+              value: "{{ N8N_ENCRYPTION_KEY }}"
+            - name: N8N_USER_MANAGEMENT_JWT_SECRET
+              value: "{{ N8N_USER_MANAGEMENT_JWT_SECRET }}"
+            - name: N8N_SECURE_COOKIE
+              value: "{{ N8N_SECURE_COOKIE|lower }}"
+            - name: N8N_DIAGNOSTICS_ENABLED
+              value: "{{ N8N_DIAGNOSTICS_ENABLED|lower }}"
+          ports:
+            - containerPort: {{ N8N_PORT }}
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: {{ N8N_PORT }}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /healthz/readiness
+              port: {{ N8N_PORT }}
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+          volumeMounts:
+            - mountPath: /home/node/.n8n
+              name: data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: n8n

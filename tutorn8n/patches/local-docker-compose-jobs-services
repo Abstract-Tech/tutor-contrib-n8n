@@ -1,0 +1,3 @@
+n8n-job:
+  image: {{ N8N_DOCKER_IMAGE }}
+  entrypoint: []

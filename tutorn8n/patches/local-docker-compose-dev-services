@@ -1,0 +1,9 @@
+n8n:
+  environment:
+    N8N_SECURE_COOKIE: "false"
+  ports:
+    - "{{ N8N_PORT }}:{{ N8N_PORT }}"
+  networks:
+    default:
+      aliases:
+        - "{{ N8N_HOST }}"

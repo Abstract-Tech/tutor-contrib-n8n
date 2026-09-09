@@ -1,0 +1,4 @@
+{% if N8N_OPENEDX_EVENTS_ENABLED %}
+RUN --mount=type=cache,target=/openedx/.cache/pip,sharing=shared \
+    pip install "openedx-events-2-n8n=={{ N8N_OPENEDX_EVENTS_VERSION }}"
+{% endif %}

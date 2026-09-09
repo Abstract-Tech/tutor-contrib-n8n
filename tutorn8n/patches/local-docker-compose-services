@@ -1,0 +1,26 @@
+n8n-permissions:
+  image: {{ DOCKER_IMAGE_PERMISSIONS }}
+  restart: on-failure
+  entrypoint: ["sh", "-c", "chown -R 1000:1000 /mounts/n8n"]
+  volumes:
+    - ../../data/n8n:/mounts/n8n
+
+n8n:
+  image: {{ N8N_DOCKER_IMAGE }}
+  restart: unless-stopped
+  depends_on:
+    n8n-permissions:
+      condition: service_completed_successfully
+  environment:
+    N8N_HOST: "{{ N8N_HOST }}"
+    N8N_PORT: "{{ N8N_PORT }}"
+    N8N_PROTOCOL: "{% if ENABLE_HTTPS %}https{% else %}http{% endif %}"
+    NODE_ENV: production
+    WEBHOOK_URL: "{% if ENABLE_HTTPS %}https{% else %}http{% endif %}://{{ N8N_HOST }}/"
+    GENERIC_TIMEZONE: "{{ N8N_GENERIC_TIMEZONE }}"
+    N8N_ENCRYPTION_KEY: "{{ N8N_ENCRYPTION_KEY }}"
+    N8N_USER_MANAGEMENT_JWT_SECRET: "{{ N8N_USER_MANAGEMENT_JWT_SECRET }}"
+    N8N_SECURE_COOKIE: "{{ N8N_SECURE_COOKIE|lower }}"
+    N8N_DIAGNOSTICS_ENABLED: "{{ N8N_DIAGNOSTICS_ENABLED|lower }}"
+  volumes:
+    - ../../data/n8n:/home/node/.n8n
