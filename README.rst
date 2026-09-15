@@ -51,20 +51,56 @@ All settings are prefixed with ``N8N_`` and can be set with
 n8n service
 ===========
 
-======================== ================================== =====================================================
-Setting                  Default                            Description
-======================== ================================== =====================================================
-``N8N_DOCKER_IMAGE``     ``docker.n8n.io/n8nio/n8n:latest`` Docker image used for the n8n container.
-``N8N_HOST``             ``n8n.{{ LMS_HOST }}``             Domain name at which n8n is exposed.
-``N8N_PORT``             ``5678``                           Port n8n listens on inside its container.
-``N8N_GENERIC_TIMEZONE`` ``UTC``                            Timezone used by n8n for scheduling.
-``N8N_ENCRYPTION_KEY``   randomly generated                 Key n8n uses to encrypt stored credentials.
-``N8N_K8S_STORAGE``      ``1Gi``                            Size of the n8n ``PersistentVolumeClaim`` (k8s only).
-======================== ================================== =====================================================
+========================= =================================== ======================================================
+Setting                   Default                             Description
+========================= =================================== ======================================================
+``N8N_DOCKER_IMAGE``      ``docker.n8n.io/n8nio/n8n:2.38.5``   Docker image used for the n8n container. We pin a
+                                                                version here instead of using ``latest``, otherwise
+                                                                two people installing on different days could end up
+                                                                on different n8n versions.
+``N8N_HOST``              ``n8n.{{ LMS_HOST }}``               Domain name at which n8n is exposed.
+``N8N_PORT``              ``5678``                             Port n8n listens on inside its container.
+``N8N_GENERIC_TIMEZONE``  ``UTC``                               Timezone used by n8n for scheduling.
+``N8N_ENCRYPTION_KEY``    randomly generated                   Key n8n uses to encrypt stored credentials.
+``N8N_K8S_STORAGE``       ``1Gi``                               Size of the n8n ``PersistentVolumeClaim`` (k8s only).
+========================= =================================== ======================================================
 
 n8n data (workflows, credentials) is persisted in the ``n8n`` bind-mounted
 data volume (``tutor local``) or ``PersistentVolumeClaim`` (``tutor k8s``),
 alongside Tutor's other services.
+
+Owner account
+=============
+
+n8n normally makes you go through a setup wizard the first time you open
+it, to create an owner account by hand. This plugin skips that: it hooks
+into Tutor's ``init`` job and calls n8n's ``/rest/owner/setup`` endpoint
+for you, so the owner account already exists by the time you open n8n.
+You don't need to run anything extra for this - ``tutor local launch``
+already runs the ``init`` job as part of a normal launch.
+
+======================== ====================== ============================================
+Setting                  Default                Description
+======================== ====================== ============================================
+``N8N_ADMIN_EMAIL``      ``admin@example.com``  Email of the owner account.
+``N8N_ADMIN_FIRST_NAME`` ``Admin``              First name of the owner account.
+``N8N_ADMIN_LAST_NAME``  ``User``               Last name of the owner account.
+``N8N_ADMIN_PASSWORD``   randomly generated     Password of the owner account.
+======================== ====================== ============================================
+
+The password is generated for you and stored in your Tutor config, not
+printed anywhere during launch. To see it, run:
+
+.. code-block:: bash
+
+    tutor config printvalue N8N_ADMIN_PASSWORD
+
+If you ever wipe the n8n data volume and need the owner account recreated,
+just re-run the init job:
+
+.. code-block:: bash
+
+    tutor local do init
 
 openedx-events-2-n8n
 =====================
